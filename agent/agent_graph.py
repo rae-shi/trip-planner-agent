@@ -3,9 +3,6 @@ from langchain_openai import ChatOpenAI
 from langchain_core.runnables import RunnableLambda
 from pydantic import BaseModel
 import time
-import threading
-import itertools
-import sys
 
 # Initialize the LLM
 llm = ChatOpenAI(model="gpt-4", temperature=0.7)
@@ -23,24 +20,6 @@ class TripPlannerState(BaseModel):
     search_results: dict = {}
     output: str | None = None
     error_count: int = 0
-
-def show_spinner(message="Thinking...", delay=0.1):
-    stop_event = threading.Event()
-
-    def spinner():
-        for c in itertools.cycle(['|', '/', '-', '\\']):
-            if stop_event.is_set():
-                break
-            sys.stdout.write(f'\r{message} {c}')
-            sys.stdout.flush()
-            time.sleep(delay)
-        sys.stdout.write('\rDone!        \n')
-
-    spinner_thread = threading.Thread(target=spinner)
-    spinner_thread.daemon = True  # Allow program to exit even if thread is running
-    spinner_thread.start()
-
-    return stop_event.set
 
 def planner_node(state):
     try:
@@ -102,8 +81,6 @@ def tool_orchestrator_node(state):
     return {"search_results": search_results}
 
 def run_trip_planner(user_input):
-    stop_spinner = show_spinner("Planning your trip...")
-
     builder = StateGraph(TripPlannerState)
     builder.add_node("PlanTrip", RunnableLambda(planner_node))
     builder.add_node("SearchInfo", RunnableLambda(search_node))
@@ -114,6 +91,4 @@ def run_trip_planner(user_input):
 
     graph = builder.compile()
     result = graph.invoke({"user_input": user_input})
-
-    stop_spinner()  # Stop spinner once done
     return result["output"]
