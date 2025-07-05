@@ -1,7 +1,11 @@
 import requests
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def search_with_tavily(query):
-    API_KEY = "YOUR_TAVILY_API_KEY"
+    API_KEY = os.getenv("TAVILY_API_KEY")
     url = "https://api.tavily.com/search"
     headers = {"Authorization": f"Bearer {API_KEY}"}
     data = {

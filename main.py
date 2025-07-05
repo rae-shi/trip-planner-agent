@@ -1,10 +1,9 @@
-from agent.trip_agent import create_agent
+from agent.agent_graph import run_trip_planner
 
 if __name__ == "__main__":
-    agent = create_agent()
     while True:
-        user_input = input("User: ")
+        user_input = input("You: ")
         if user_input.lower() in ["exit", "quit"]:
             break
-        response = agent.run(user_input)
+        response = run_trip_planner(user_input)
         print("Agent:", response)
