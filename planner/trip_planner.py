@@ -1,2 +1,2 @@
-def plan_itinerary(query):
-    return f"Planning trip for input: {query}"
+def plan_itinerary(instructions):
+    return f"Planning trip for input: {instructions}"
